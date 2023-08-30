@@ -1,11 +1,10 @@
-let selectedX;
-let selectedY;
-let pixelArray, interval;
+let pixelArray;
 const coordElement = document.getElementById("pixel");
-const placeButton = document.getElementById("placePixel");
 const ownerElement = document.getElementById("owner");
 const chatInput = document.getElementById("chatInput");
 const messages = document.getElementById("messages");
+let mouseDownTime;
+let mouseUpTime;
 
 const colors = {
   1: "#6d001a",
@@ -43,7 +42,6 @@ const colors = {
 };
 
 let selectedColor;
-
 const canvas = document.getElementById("board");
 const ctx = canvas.getContext("2d");
 
@@ -66,126 +64,12 @@ function renderPixel(x, y, color) {
 function updateColor(event) {
   selectedColor = event.target.getAttribute("color");
   new Audio("audio/Select Color.mp3").play();
-  showPlaceButton();
-}
-
-function showPlaceButton() {
-  if (typeof selectedX !== "undefined" && selectedColor) {
-    placeButton.classList.add("show");
-  }
-}
-
-function renderCrosshair(selectedX, selectedY) {
-  coordElement.classList.add("show");
-  coordElement.innerHTML = `${selectedX + 1}, ${selectedY + 1}`;
-
-  const x = selectedX * 10;
-  const y = selectedY * 10;
-
-  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-
-  ctx.fillRect(x + 1, y, 2, 1);
-  ctx.fillRect(x, y, 1, 3);
-
-  ctx.fillRect(x + 7, y, 2, 1);
-  ctx.fillRect(x + 9, y, 1, 3);
-
-  ctx.fillRect(x, y + 7, 1, 2);
-  ctx.fillRect(x, y + 9, 3, 1);
-
-  ctx.fillRect(x + 7, y + 9, 2, 1);
-  ctx.fillRect(x + 9, y + 7, 1, 3);
-
-  ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-
-  ctx.fillRect(x, y - 1, 4, 0.7);
-  ctx.fillRect(x - 1, y - 1, 0.7, 5);
-
-  ctx.fillRect(x + 6, y - 1, 4, 0.7);
-  ctx.fillRect(x + 10.3, y - 1, 0.7, 5);
-
-  ctx.fillRect(x - 1, y + 6, 0.7, 5);
-  ctx.fillRect(x, y + 10.3, 4, 0.7);
-
-  ctx.fillRect(x + 10.3, y + 6, 0.7, 4);
-  ctx.fillRect(x + 6, y + 10.3, 5, 0.7);
-
-  showPlaceButton();
-}
-
-function unrenderCrosshair(selectedX, selectedY) {
-  // Old Pixel
-  renderPixel(selectedX, selectedY, pixelArray[selectedY][selectedX]);
-
-  // Old Pixel Left
-  if (pixelArray[selectedY][selectedX - 1]) {
-    renderPixel(selectedX - 1, selectedY, pixelArray[selectedY][selectedX - 1]);
-  }
-
-  // Old Pixel Right
-  if (pixelArray[selectedY][selectedX + 1]) {
-    renderPixel(selectedX + 1, selectedY, pixelArray[selectedY][selectedX + 1]);
-  }
-
-  // Old Pixel Up
-  if (pixelArray[selectedY - 1]) {
-    renderPixel(selectedX, selectedY - 1, pixelArray[selectedY - 1][selectedX]);
-  }
-
-  // Old Pixel Down
-  if (pixelArray[selectedY + 1]) {
-    renderPixel(selectedX, selectedY + 1, pixelArray[selectedY + 1][selectedX]);
-  }
-
-  // Old Pixel Top
-  if (pixelArray[selectedY - 1]) {
-    // Old Pixel Top Right
-    if (pixelArray[selectedY - 1][selectedX + 1]) {
-      renderPixel(
-        selectedX + 1,
-        selectedY - 1,
-        pixelArray[selectedY - 1][selectedX + 1]
-      );
-    }
-
-    // Old Pixel Top Left
-    if (pixelArray[selectedY - 1][selectedX - 1]) {
-      renderPixel(
-        selectedX - 1,
-        selectedY - 1,
-        pixelArray[selectedY - 1][selectedX - 1]
-      );
-    }
-  }
-
-  // Old Pixel Bottom
-  if (pixelArray[selectedY + 1]) {
-    // Old Pixel Bottom Right
-    if (pixelArray[selectedY + 1][selectedX + 1]) {
-      renderPixel(
-        selectedX + 1,
-        selectedY + 1,
-        pixelArray[selectedY + 1][selectedX + 1]
-      );
-    }
-
-    // Old Pixel Bottom Left
-    if (pixelArray[selectedY + 1][selectedX - 1]) {
-      renderPixel(
-        selectedX - 1,
-        selectedY + 1,
-        pixelArray[selectedY + 1][selectedX - 1]
-      );
-    }
-  }
 }
 
 const socket = io();
-
 socket.on("pixelUpdate", function (event) {
   pixelArray = event.pixelArray;
   renderPixel(event.x, event.y, event.color);
-  cachedPixels[`${event.x}${event.y}`] = { c: event.color, u: event.u };
 });
 
 socket.on("canvasUpdate", function (event) {
@@ -207,7 +91,7 @@ function handle(e) {
   }
 }
 
-function placePixel(event) {
+function placePixel(x, y) {
   fetch("/placepixel", {
     method: "POST",
     headers: {
@@ -215,54 +99,113 @@ function placePixel(event) {
     },
     body: JSON.stringify({
       token: walletAddress,
-      selectedX: selectedX,
-      selectedY: selectedY,
+      selectedX: x,
+      selectedY: y,
       selectedColor: selectedColor,
     }),
   }).then((response) => {
     if (response.status == 200) {
       new Audio("audio/Pixel Placed.mp3").play();
     }
-    response.json().then((json) => {
-      generateCountdown(placeButton, json.cooldown);
-    });
   });
 }
 
-function generateCountdown(element, timestamp) {
-  const enableTime = new Date(timestamp);
-  if (interval) {
-    clearInterval(interval);
-  }
-  const timeRemaining = Math.ceil(
-    (enableTime.getTime() - new Date().getTime()) / 100
-  );
-  if (1 > timeRemaining) {
-    return;
-  }
+let lastX, lastY;
 
-  element.classList.remove("enabled");
-  placeButton.disabled = true;
 
-  interval = setInterval(() => {
-    const timeRemaining = Math.ceil(
-      (enableTime.getTime() - new Date().getTime()) / 1000
-    );
-
-    const minute = ~~(timeRemaining / 59.9).toString();
-    const second = (timeRemaining % 60).toString();
-
-    element.innerHTML = `${minute.length == 1 ? "0" : ""}${minute}:${
-      second.length == 1 ? "0" : ""
-    }${second}`;
-    if (1 > timeRemaining) {
-      element.classList.add("enabled");
-      element.innerHTML = `<i class="fa-sharp fa-solid fa-check"></i>`;
-      clearInterval(interval);
-      interval = undefined;
-      placeButton.disabled = false;
-
-      new Audio("audio/Pixel Ready.mp3").play();
-    }
-  }, 1000);
+function renderPreviewPixel(x, y, color) {
+  ctx.fillStyle = color;
+  ctx.globalAlpha = 0.5; // To make the preview pixel translucent
+  ctx.fillRect(x * 10, y * 10, 10, 10);
+  ctx.globalAlpha = 1; // Reset the alpha value to default
 }
+
+canvas.addEventListener("mousemove", (event) => {
+  const rect = canvas.getBoundingClientRect();
+  let x = event.clientX - rect.left;
+  let y = event.clientY - rect.top;
+
+  x = Math.floor(x / zoom);
+  y = Math.floor(y / zoom);
+
+  x = Math.floor(x / 10);
+  y = Math.floor(y / 10);
+
+  // Clear the previous preview pixel and redraw that pixel from pixelArray if set
+  if (lastX !== undefined && lastY !== undefined) {
+    ctx.clearRect(lastX * 10, lastY * 10, 10, 10);
+    if (pixelArray[lastY] && pixelArray[lastY][lastX] !== 32) {  // Add pixelArray[lastY] check for safety
+      renderPixel(lastX, lastY, pixelArray[lastY][lastX]);
+    }
+  }
+
+  // Draw the preview pixel only if the cursor is within the canvas bounds
+  if (selectedColor && x >= 0 && x < pixelArray[0].length && y >= 0 && y < pixelArray.length) {
+    renderPixel(x, y, selectedColor);
+  } else if (y >= pixelArray.length) {  // This checks if the cursor is outside the canvas at the bottom side
+    // Redraw the entire canvas to remove the preview pixel if the cursor goes beyond the bottom edge
+    renderPixels(pixelArray);
+  }
+
+  // Update last cursor position
+  lastX = x;
+  lastY = y;
+});
+
+canvas.addEventListener("mouseleave", () => {
+  // Redraw the entire canvas to remove the preview pixel
+  renderPixels(pixelArray);
+});
+
+
+canvas.addEventListener("click", (event) => {
+  const timeDifference = mouseUpTime - mouseDownTime;
+    // Only proceed if the difference is less than 150 milliseconds
+    if (timeDifference > 150) {
+      return;
+    }
+  const rect = canvas.getBoundingClientRect();
+  
+  // Calculate the x and y positions without translations and zoom
+  let x = event.clientX - rect.left;
+  let y = event.clientY - rect.top;
+
+  // Adjust the x and y positions based on the zoom level
+  x = Math.floor(x / zoom);
+  y = Math.floor(y / zoom);
+
+  // Round to the nearest pixel location
+  x = Math.floor(x / 10);
+  y = Math.floor(y / 10);
+
+  if (selectedColor && x >= 0 && x < pixelArray[0].length && y >= 0 && y < pixelArray.length) {
+    placePixel(x, y);
+  }
+});
+
+canvas.addEventListener("click", (event) => {
+  if (event.shiftKey) {
+    const rect = canvas.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+    x = Math.floor(x / 10); // assuming each pixel is 10x10 on the canvas
+    y = Math.floor(y / 10);
+
+    fetchWalletAddress(x, y);
+  }
+});
+
+function fetchWalletAddress(x, y) {
+  fetch('/getwallet', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ x, y })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.walletAddress);  // or however you want to display it
+  });
+}
+

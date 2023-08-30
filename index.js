@@ -14,6 +14,9 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 
+
+
+
 // MongoDB
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const client = new MongoClient(process.env["MONGO_URI"], {
@@ -57,30 +60,6 @@ client.connect(async (err) => {
 
 client2.connect();
 
-const verifyToken = async (idToken) => {
-  // if missing ID token
-  if (!idToken) {
-    throw "Missing Google ID token";
-  }
-
-  // verify legitimacy of ID token
-  const ticket = await googleClient.verifyIdToken({
-    idToken: idToken,
-    audience: process.env["GOOGLE_CLIENT_ID"],
-  });
-
-  // get user payload
-  const payload = ticket.getPayload();
-
-  // if (![].includes(payload.email) && (payload.hd !== "virtuallearning.ca" && payload.hd !== "tldsb.on.ca")) {
-  //   throw "You must sign in with your VLC (@virtuallearning.ca or @tldsb.on.ca) account.";
-  // } else
-  if (payload.aud !== process.env["GOOGLE_CLIENT_ID"]) {
-    throw new Error(`Invalid Client ID: ${payload.aud}`);
-  }
-
-  return payload;
-};
 
 const renderIndex = (req, res) => {
   if (!pixelArray) {
@@ -109,12 +88,17 @@ app.post("/", async (req, res) => {
     cooldown = user.cooldown;
   } else {
     cooldown = Date.now();
-    usersCollection.insertOne({
-      _id: walletAddress,
-      name: walletAddress,
-      cooldown: cooldown,
-      ip: req.header("x-forwarded-for")
-    });
+    usersCollection.updateOne(
+      { _id: walletAddress },
+      {
+        $setOnInsert: {
+          name: walletAddress,
+          ip: req.header("x-forwarded-for")
+        },
+        $set: { cooldown: Date.now() }
+      },
+      { upsert: true }
+    );    
   }
   
   res.cookie('walletAddress', walletAddress, { httpOnly: true, secure: true, maxAge: 3600000 }); // 1 hour expiration
@@ -154,20 +138,6 @@ app.post("/placepixel", async (req, res) => {
       pixelArray: pixelArray,
       u: user._id,
     });
-
-    // EESA EDITS
-
-    // let userAllowedPixels = 0;
-
-    // Todo: Fetch ahsens website and get current credit balance
-
-    // if payed {
-    // 		 userAllowedPixels = 4
-    // }
-
-    // ... NVM, todo later ;-;
-
-    // EESA EDITS
 
     const cooldown = allowedUsers.includes(user.name) ? 10 : Date.now() + 8000;
     res.send({ cooldown: cooldown });
@@ -217,6 +187,24 @@ app.post("/pixel", async (req, res) => {
   res.json(pixel.p[pixel.p.length - 1]);
 });
 
+app.post("/getwallet", async (req, res) => {
+  const x = req.body.x;
+  const y = req.body.y;
+
+  const pixel = await placedCollection.findOne({
+    _id: `${x}${y}`
+  });
+  console.log(req.body);
+
+  if (pixel) {
+    const lastPlaced = pixel.p[pixel.p.length - 1];
+    res.json({ walletAddress: lastPlaced.u });
+  } else {
+    res.status(404).send("Pixel not found");
+  }
+});
+
+
 const sendPixelArray = (socket) => {
   if (typeof pixelArray !== "undefined") {
     if (socket) {
@@ -230,16 +218,6 @@ const sendPixelArray = (socket) => {
 };
 
 io.on("connection", sendPixelArray);
-
-// io.on('connection', (socket) => {
-//   socket.on('chat', (msg) => {
-// 		  let walletAddress;
-
-// console.log(walletAddress)
-
-//     io.emit('chat', msg);
-//   });
-// });
 
 setInterval(() => {
   if (pixelArray) {

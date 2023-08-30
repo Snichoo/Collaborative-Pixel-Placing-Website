@@ -54,32 +54,39 @@
     </div>
     <div id="owner"></div>
     <div id="colors">
-      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black"
-      data-text="signin_with" data-size="medium" data-logo_alignment="left">
-      </div>
+      <div
+        class="g_id_signin"
+        data-type="standard"
+        data-shape="rectangular"
+        data-theme="filled_black"
+        data-text="signin_with"
+        data-size="medium"
+        data-logo_alignment="left"
+      ></div>
       <button id="connect-web3">Connect Wallet</button>
     </div>
-  </div>
-
-  <div id="container">
-    <p id="pixel"></p>
-    <div id="zoom-container">
-      <canvas height="<%- canvasHeight %>" width="<%- canvasWidth %>" id="board"></canvas>
     </div>
-  </div>
-
-  <div class="center">
-    <p id="placePixel" onclick="placePixel(event)"><i class="fa-sharp fa-solid fa-check"></i></p>
-  </div>
-  <div id="error-box">
-    <div class="error-content">
-      <div class="error-top">
-        <h1>:[</h1>
+    <div id="container">
+      <p id="pixel"></p>
+      <div id="zoom-container">
+        <canvas height="<%- canvasHeight %>" width="<%- canvasWidth %>" id="board"></canvas>
       </div>
-      <p id="error">Error Text</p>
-      <button class="close" onclick="closeErrorBox()">Okay!</button>
     </div>
-  </div>
+    <div class="center">
+      <p id="placePixel" onclick="placePixel(event)">
+        <i class="fa-sharp fa-solid fa-check"></i>
+      </p>
+    </div>
+    <div id="error-box">
+      <div class="error-content">
+        <div class="error-top">
+          <h1>:[</h1>
+        </div>
+        <p id="error">Error Text</p>
+        <button class="close" onclick="closeErrorBox()">Okay!</button>
+      </div>
+    </div>
+    
 
 
     <!-- <script>
