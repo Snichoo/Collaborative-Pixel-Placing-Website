@@ -1,0 +1,149 @@
+<html>
+
+<head>
+  <title>VLC Board</title>
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
+  <link rel="manifest" href="favicon/site.webmanifest" />
+
+  <!-- Meta tags -->
+  <meta name="title" content="VLC Board" />
+  <meta name="description"
+    content="Work together to create something amazing. Join hundreds of other students and see what happens when you share one huge canvas." />
+  <meta name="keywords" content="VLC Board" />
+  <meta name="robots" content="noindex, nofollow" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" type="text/css" href="css/board.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+
+  <!-- Load Libraries -->
+  <script src="js/googleSignin.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <div id="g_id_onload" data-client_id="421353515798-d0s48fr2undoapir896fjhgvl45vtbji.apps.googleusercontent.com"
+    data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false">
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://polyfill.io/v3/polyfill.js?features=default"></script>
+
+  <!-- JS -->
+
+  <script src="js/board/index.js" defer></script>
+  <script src="js/board/camera.js" defer></script>
+  <script src="js/error.js" defer></script>
+  <script>
+    const googleClientId = "<%- googleClientId %>";
+  </script>
+</head>
+
+<body>
+  <div class="sidebar">
+    <div class="info">
+      <img class="logo"
+        src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/47058/artist-palette-emoji-clipart-xl.png"
+        alt="VLC Board" />
+      <h1>VLC Board</h1>
+      <div class="links">
+        <a href="/about" target="_blank">About r/Place</a>
+        <a href="https://github.com/TheRedstoneRadiant/VLC-r-Place" target="_blank">Star on Github</a>
+      </div>
+    </div>
+    <div id="owner"></div>
+    <div id="colors">
+      <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black"
+      data-text="signin_with" data-size="medium" data-logo_alignment="left">
+      </div>
+      <button id="connect-web3">Connect Wallet</button>
+    </div>
+  </div>
+
+  <div id="container">
+    <p id="pixel"></p>
+    <div id="zoom-container">
+      <canvas height="<%- canvasHeight %>" width="<%- canvasWidth %>" id="board"></canvas>
+    </div>
+  </div>
+
+  <div class="center">
+    <p id="placePixel" onclick="placePixel(event)"><i class="fa-sharp fa-solid fa-check"></i></p>
+  </div>
+  <div id="error-box">
+    <div class="error-content">
+      <div class="error-top">
+        <h1>:[</h1>
+      </div>
+      <p id="error">Error Text</p>
+      <button class="close" onclick="closeErrorBox()">Okay!</button>
+    </div>
+  </div>
+
+
+    <!-- <script>
+      $(function(){
+        var socket = io();
+        // Form submission handler.
+        // $('#m').submit(function(){
+        //   // Send message to server.
+        //   socket.emit('chat', $('#m').val());
+        //   $('#m').val('');
+        //   return false;
+        // });
+				$('#m').keypress(function (e) {
+  if (e.which == 13) {
+          socket.emit('chat', $('#m').val());
+          $('#m').val('');
+    return false;    //<---- Add this line
+  }
+});
+        // Display messages emitted from server.
+        socket.on('chat', function(msg){
+          $('#messages').append($('<span>').text(msg));
+					 $('#messages').append($('<br>'))
+        });
+      });
+    </script> -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("connect-web3").addEventListener("click", async () => {
+          if (window.ethereum) {
+            try {
+              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+              const account = accounts[0];
+              if (account) {
+               handleCredentialResponse({walletAddress: account});
+              }
+              // Post the wallet address to the server
+              fetch('/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  walletAddress: account
+                })
+              })
+              .then(response => response.json())
+              .then(data => {
+                // Handle the server response here if needed
+                console.log(data);
+              })
+              .catch((error) => {
+                console.error('Error:', error);
+              });
+              
+            } catch (err) {
+              console.error(err);
+            }
+          } else {
+            alert("Please install a Web3 provider like MetaMask");
+          }
+        });
+      });
+    </script>
+</body>
+
+</html>
