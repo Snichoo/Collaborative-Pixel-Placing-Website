@@ -38,6 +38,10 @@
   <script>
     const googleClientId = "<%- googleClientId %>";
   </script>
+
+
+<script src="js/app.js" defer></script>
+
 </head>
 
 <body>
@@ -52,6 +56,7 @@
         <a href="https://github.com/TheRedstoneRadiant/VLC-r-Place" target="_blank">Star on Github</a>
       </div>
     </div>
+    <div id="root"></div>
     <div id="owner"></div>
     <div id="colors">
       <div
@@ -86,33 +91,7 @@
         <button class="close" onclick="closeErrorBox()">Okay!</button>
       </div>
     </div>
-    
-
-
-    <!-- <script>
-      $(function(){
-        var socket = io();
-        // Form submission handler.
-        // $('#m').submit(function(){
-        //   // Send message to server.
-        //   socket.emit('chat', $('#m').val());
-        //   $('#m').val('');
-        //   return false;
-        // });
-				$('#m').keypress(function (e) {
-  if (e.which == 13) {
-          socket.emit('chat', $('#m').val());
-          $('#m').val('');
-    return false;    //<---- Add this line
-  }
-});
-        // Display messages emitted from server.
-        socket.on('chat', function(msg){
-          $('#messages').append($('<span>').text(msg));
-					 $('#messages').append($('<br>'))
-        });
-      });
-    </script> -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("connect-web3").addEventListener("click", async () => {

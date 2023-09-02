@@ -13,10 +13,6 @@ const io = new Server(server);
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
-
-
-
-
 // MongoDB
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const client = new MongoClient(process.env["MONGO_URI"], {
