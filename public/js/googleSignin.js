@@ -1,5 +1,3 @@
-let walletAddress;
-
 function handleCredentialResponse(credential) {
   console.log("Credential:", credential);
   walletAddress = credential.walletAddress;
@@ -23,13 +21,6 @@ function handleCredentialResponse(credential) {
           colors[color]
         };" color="${color}"></div>`;
       }
-      response.json().then((json) => {
-        generateCountdown(placeButton, json.cooldown);
-      });
-    } else {
-      response.text().then((json) => {
-        displayErrorMessage(json.error);
-      });
-    }
+    } 
   });
 }

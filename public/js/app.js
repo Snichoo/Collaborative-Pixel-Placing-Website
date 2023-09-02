@@ -238,6 +238,9 @@ class Dapp {
         loading: false,
       });
 
+      // Call handleCredentialResponse() from signin.js
+  handleCredentialResponse({ walletAddress: this.state.selectedAddress });
+
       this.render();
     } catch (err) {
       console.error(err);
