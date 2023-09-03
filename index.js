@@ -133,45 +133,38 @@ app.get("/", renderIndex);
 
 app.post("/", async (req, res) => {
   const walletAddress = req.body.walletAddress;
-
   // ... The rest of the "/" route code ...
   const user = await usersCollection.findOne({ _id: walletAddress });
   let cooldown;
-  
   if (user) {
-    cooldown = user.cooldown;
+    cooldown = 0;
   } else {
-    cooldown = Date.now();
     usersCollection.updateOne(
       { _id: walletAddress },
       {
         $setOnInsert: {
           name: walletAddress,
-          ip: req.header("x-forwarded-for")
+          ip: req.header("x-forwarded-for"),
         },
-        $set: { cooldown: Date.now() }
+        $set: { cooldown: Date.now() },
       },
       { upsert: true }
-    );    
+    );
   }
   res.send({ cooldown: cooldown });
 });
 
 app.post("/placepixel", async (req, res) => {
-  const walletAddress = req.body.walletAddress;
-
+  const walletAddress = req.body.walletAddress; // Get the walletAddress from the request body
   console.log("Wallet Address:", walletAddress);
-
   const user = await usersCollection.findOne({ _id: walletAddress });
   console.log("User fetched from database:", user);
   let cooldown;
-
   if (user) {
     cooldown = user.cooldown;
   } else {
     return res.status(405).send("Not a registered user!");
   }
-
   if (cooldown < Date.now()) {
     try {
       pixelArray[req.body.selectedY][req.body.selectedX] = parseInt(
@@ -181,7 +174,6 @@ app.post("/placepixel", async (req, res) => {
     } catch (err) {
       return res.sendStatus(403);
     }
-
     io.emit("pixelUpdate", {
       x: req.body.selectedX,
       y: req.body.selectedY,
@@ -189,15 +181,12 @@ app.post("/placepixel", async (req, res) => {
       pixelArray: pixelArray,
       u: user._id,
     });
-
-    const cooldown = allowedUsers.includes(user.name) ? 10 : Date.now() + 8000;
+    const cooldown = allowedUsers.includes(user.name) ? 0 : 0;
     res.send({ cooldown: cooldown });
-
     await usersCollection.updateOne(
       { _id: walletAddress },
       { $set: { cooldown: cooldown } }
     );
-
     let _id = `${req.body.selectedX}${req.body.selectedY}`;
     const pixel = await placedCollection.findOne({ _id });
     if (!pixel) {
@@ -215,6 +204,7 @@ app.post("/placepixel", async (req, res) => {
     return res.status(403).send({ cooldown: cooldown });
   }
 });
+
 
 app.get("/about", (req, res) => {
   res.redirect("https://en.wikipedia.org/wiki/R/place");

@@ -98,7 +98,7 @@ function placePixel(x, y) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      token: walletAddress,
+      walletAddress: walletAddress, // Pass the walletAddress here
       selectedX: x,
       selectedY: y,
       selectedColor: selectedColor,
