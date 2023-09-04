@@ -94,17 +94,17 @@ class Dapp {
           <div class="col-6 p-4 text-center">
             <p>Please connect to your wallet and sign in.</p>
             <button
-              class="btn btn-warning"
+              class="btn btn-custom"
               type="button"
               id="connect-wallet-button"
             >
-              Connect Wallet & Sign In
+              <i class="fa fa-wallet"></i> Connect Wallet & Sign In
             </button>
           </div>
         </div>
       </div>
     `;
-  }
+  }  
 
   loading() {
     return `

@@ -13,6 +13,7 @@ const io = new Server(server);
 const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
+
 const cors = require("cors");
 
 var corsOptions = {
@@ -231,19 +232,25 @@ app.post("/pixel", async (req, res) => {
 app.post("/getwallet", async (req, res) => {
   const x = req.body.x;
   const y = req.body.y;
-
   const pixel = await placedCollection.findOne({
-    _id: `${x}${y}`
+    _id: `${x}${y}`,
   });
   console.log(req.body);
-
   if (pixel) {
     const lastPlaced = pixel.p[pixel.p.length - 1];
-    res.json({ walletAddress: lastPlaced.u });
+    const previousOwners = pixel.p.slice(0, -1); // Get all previous owners except the last one
+    res.json({
+      walletAddress: lastPlaced.u,
+      x: x,
+      y: y,
+      color: lastPlaced.c,
+      previousOwners: previousOwners,
+    });
   } else {
     res.status(404).send("Pixel not found");
   }
 });
+
 
 
 const sendPixelArray = (socket) => {

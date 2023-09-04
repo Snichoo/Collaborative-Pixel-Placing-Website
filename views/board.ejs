@@ -1,78 +1,69 @@
 <html>
 
 <head>
-  <title></title>
-
-  <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="" />
-  <link rel="icon" type="image/png" sizes="32x32" href="" />
-  <link rel="icon" type="image/png" sizes="16x16" href="" />
-  <link rel="manifest" href="" />
-
-  <!-- Meta tags -->
-  <meta name="title" content="" />
-  <meta name="description"
-    content="" />
-  <meta name="keywords" content="" />
-  <meta name="robots" content="noindex, nofollow" />
-
-  <!-- CSS -->
-  <link rel="stylesheet" type="text/css" href="css/board.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
-
-  <!-- Load Libraries -->
-  <script src="js/Signin.js"></script>
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="https://polyfill.io/v3/polyfill.js?features=default"></script>
-
-  <!-- JS -->
-
-  <script src="js/board/index.js" defer></script>
-  <script src="js/board/camera.js" defer></script>
-  <script src="js/error.js" defer></script>
-  <script src="js/app.js" defer></script>
+    <title></title>
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="" />
+    <link rel="icon" type="image/png" sizes="32x32" href="" />
+    <link rel="icon" type="image/png" sizes="16x16" href="" />
+    <link rel="manifest" href="" />
+    <!-- Meta tags -->
+    <meta name="title" content="" />
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="robots" content="noindex, nofollow" />
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="css/board.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+    <!-- Load Libraries -->
+    <script src="js/Signin.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.js?features=default"></script>
+    <!-- JS -->
+    <script src="js/board/index.js" defer></script>
+    <script src="js/board/camera.js" defer></script>
+    <script src="js/error.js" defer></script>
+    <script src="js/app.js" defer></script>
 </head>
 
 <body>
-  <div class="sidebar">
-    <div class="info">
-    </div>
-    <div id="owner"></div>
-    <div id="colors">
-      <div
-        class="g_id_signin"
-        data-type="standard"
-        data-shape="rectangular"
-        data-theme="filled_black"
-        data-text="signin_with"
-        data-size="medium"
-        data-logo_alignment="left"
-      ></div>
-    <div id="root"></div>    </div>
-    </div>
-    <div id="container">
-      <p id="pixel"></p>
-      <div id="zoom-container">
-        <canvas height="<%- canvasHeight %>" width="<%- canvasWidth %>" id="board"></canvas>
-      </div>
-    </div>
-    <div class="center">
-      <p id="placePixel" onclick="placePixel(event)">
-        <i class="fa-sharp fa-solid fa-check"></i>
-      </p>
-    </div>
-    <div id="error-box">
-      <div class="error-content">
-        <div class="error-top">
-          <h1>:[</h1>
+    <div class="sidebar">
+        <div class="info-section">
+            <div id="coordinate"></div>
+            <div id="owner"></div>
+            <div id="color"></div>
+            <div id="previousOwners"></div>
         </div>
-        <p id="error">Error Text</p>
-        <button class="close" onclick="closeErrorBox()">Okay!</button>
-      </div>
+        <div id="colors">
+            <div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="filled_black"
+                data-text="signin_with" data-size="medium" data-logo_alignment="left"></div>
+            <div id="root"></div>
+        </div>
+    </div>
+
+    <div id="container">
+        <p id="pixel"></p>
+        <div id="zoom-container">
+            <canvas height="<%- canvasHeight %>" width="<%- canvasWidth %>" id="board"></canvas>
+        </div>
+    </div>
+
+    <div class="center">
+        <p id="placePixel" onclick="placePixel(event)">
+            <i class="fa-sharp fa-solid fa-check"></i>
+        </p>
+    </div>
+
+    <div id="error-box">
+        <div class="error-content">
+            <div class="error-top">
+                <h1>:[</h1>
+            </div>
+            <p id="error">Error Text</p>
+            <button class="close" onclick="closeErrorBox()">Okay!</button>
+        </div>
     </div>
     <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js"></script>
-    
 </body>
 
 </html>

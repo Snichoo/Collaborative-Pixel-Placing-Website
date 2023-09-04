@@ -212,11 +212,11 @@ canvas {
   justify-content: center;
 }
 
-#owner {
+.info-section {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  justify-content: space-evenly;
 }
 
 #owner > img {
@@ -273,4 +273,27 @@ canvas {
   color: white;
   font-weight: 700;
   font-size: 17px;
+}
+
+.btn-custom {
+  background: linear-gradient(45deg, #f6c90e, #ffae28); /* gradient background */
+  border: none;
+  border-radius: 25px; /* rounded corners */
+  color: #fff; /* white text */
+  padding: 10px 20px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2); /* shadow effect */
+  transition: transform 0.3s, box-shadow 0.3s; /* smooth hover effects */
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-custom i { /* spacing for the icon */
+  margin-right: 8px;
+}
+
+.btn-custom:hover {
+  transform: translateY(-2px); /* subtle "lift" effect */
+  box-shadow: 0px 7px 20px rgba(0, 0, 0, 0.25); /* enhanced shadow on hover */
 }

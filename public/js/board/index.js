@@ -3,6 +3,11 @@ const coordElement = document.getElementById("pixel");
 const ownerElement = document.getElementById("owner");
 const chatInput = document.getElementById("chatInput");
 const messages = document.getElementById("messages");
+const coordinateElement = document.getElementById("coordinate");
+const colorElement = document.getElementById("color");
+const previousOwnersElement = document.getElementById("previousOwners");
+
+
 let mouseDownTime;
 let mouseUpTime;
 
@@ -189,12 +194,23 @@ canvas.addEventListener("click", (event) => {
         if (displayAddress.length > 15) {
           displayAddress = displayAddress.substring(0, 6) + "..." + displayAddress.substring(displayAddress.length - 6);
         }
-        ownerElement.innerText = `Wallet Address: ${displayAddress}`;
+        ownerElement.innerHTML = `Wallet Address: <span class="centered-text">${displayAddress}</span>`;
         ownerElement.title = data.walletAddress;  // full address as a tooltip
+        
+        // Display coordinate, color, and previous owners of the pixel
+        coordinateElement.innerHTML = `Coordinate: <span class="centered-text">(${data.x}, ${data.y})</span>`;
+        colorElement.innerHTML = `Color: <span class="centered-text">${colors[data.color]}</span>`;
+        previousOwnersElement.innerHTML = `Previous Owners: ${data.previousOwners.map(owner => {
+          let shortAddress = owner.u;
+          if (shortAddress.length > 15) {
+            shortAddress = shortAddress.substring(0, 6) + "..." + shortAddress.substring(shortAddress.length - 6);
+          }
+          return `<div class="centered-text">Address: ${shortAddress}, Color: ${colors[owner.c]}</div>`;
+        }).join('')}`;
       } else {
         ownerElement.innerText = "Unknown Address";
       }
-    })    
+    })
     .catch(error => {
       console.error('Error fetching wallet address:', error);
       ownerElement.innerText = "Error fetching address";
