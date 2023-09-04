@@ -159,11 +159,6 @@ canvas.addEventListener("mouseleave", () => {
 
 
 canvas.addEventListener("click", (event) => {
-  const timeDifference = mouseUpTime - mouseDownTime;
-    // Only proceed if the difference is less than 150 milliseconds
-    if (timeDifference > 150) {
-      return;
-    }
   const rect = canvas.getBoundingClientRect();
   
   // Calculate the x and y positions without translations and zoom
@@ -178,34 +173,44 @@ canvas.addEventListener("click", (event) => {
   x = Math.floor(x / 10);
   y = Math.floor(y / 10);
 
-  if (selectedColor && x >= 0 && x < pixelArray[0].length && y >= 0 && y < pixelArray.length) {
-    placePixel(x, y);
-  }
-});
-
-canvas.addEventListener("click", (event) => {
+  // Check if the shift key is pressed during the click
   if (event.shiftKey) {
-    const rect = canvas.getBoundingClientRect();
-    let x = event.clientX - rect.left;
-    let y = event.clientY - rect.top;
-    x = Math.floor(x / 10); // assuming each pixel is 10x10 on the canvas
-    y = Math.floor(y / 10);
+    fetch('/getwallet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ x, y }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.walletAddress) {
+        let displayAddress = data.walletAddress;
+        if (displayAddress.length > 15) {
+          displayAddress = displayAddress.substring(0, 6) + "..." + displayAddress.substring(displayAddress.length - 6);
+        }
+        ownerElement.innerText = `Wallet Address: ${displayAddress}`;
+        ownerElement.title = data.walletAddress;  // full address as a tooltip
+      } else {
+        ownerElement.innerText = "Unknown Address";
+      }
+    })    
+    .catch(error => {
+      console.error('Error fetching wallet address:', error);
+      ownerElement.innerText = "Error fetching address";
+    });
 
-    fetchWalletAddress(x, y);
+  } else {
+    // The logic for placing a pixel (existing click event logic)
+    const timeDifference = mouseUpTime - mouseDownTime;
+    // Only proceed if the difference is less than 150 milliseconds
+    if (timeDifference > 150) {
+      return;
+    }
+    
+    if (selectedColor && x >= 0 && x < pixelArray[0].length && y >= 0 && y < pixelArray.length) {
+      placePixel(x, y);
+    }
   }
 });
-
-function fetchWalletAddress(x, y) {
-  fetch('/getwallet', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ x, y })
-  })
-  .then(res => res.json())
-  .then(data => {
-    alert(data.walletAddress);  // or however you want to display it
-  });
-}
 

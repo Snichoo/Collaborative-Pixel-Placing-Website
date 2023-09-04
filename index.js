@@ -33,7 +33,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // database
-const db = require("./Backend/app/models");
+const db = require("./web3Signin/app/models");
 db.mongoose
   .connect(db.url, {
     useNewUrlParser: true,
@@ -48,8 +48,8 @@ db.mongoose
   });
 
 // routes
-require("./Backend/app/routes/auth.routes")(app);
-require("./Backend/app/routes/user.routes")(app);
+require("./web3Signin/app/routes/auth.routes")(app);
+require("./web3Signin/app/routes/user.routes")(app);
 
 // MongoDB
 const { MongoClient, ServerApiVersion } = require("mongodb");

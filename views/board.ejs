@@ -1,19 +1,19 @@
 <html>
 
 <head>
-  <title>VLC Board</title>
+  <title></title>
 
   <!-- Favicon -->
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png" />
-  <link rel="manifest" href="favicon/site.webmanifest" />
+  <link rel="apple-touch-icon" sizes="180x180" href="" />
+  <link rel="icon" type="image/png" sizes="32x32" href="" />
+  <link rel="icon" type="image/png" sizes="16x16" href="" />
+  <link rel="manifest" href="" />
 
   <!-- Meta tags -->
-  <meta name="title" content="VLC Board" />
+  <meta name="title" content="" />
   <meta name="description"
-    content="Work together to create something amazing. Join hundreds of other students and see what happens when you share one huge canvas." />
-  <meta name="keywords" content="VLC Board" />
+    content="" />
+  <meta name="keywords" content="" />
   <meta name="robots" content="noindex, nofollow" />
 
   <!-- CSS -->
@@ -22,10 +22,6 @@
 
   <!-- Load Libraries -->
   <script src="js/Signin.js"></script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <div id="g_id_onload" data-client_id="421353515798-d0s48fr2undoapir896fjhgvl45vtbji.apps.googleusercontent.com"
-    data-context="signin" data-ux_mode="popup" data-callback="handleCredentialResponse" data-auto_prompt="false">
-  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://polyfill.io/v3/polyfill.js?features=default"></script>
@@ -35,26 +31,12 @@
   <script src="js/board/index.js" defer></script>
   <script src="js/board/camera.js" defer></script>
   <script src="js/error.js" defer></script>
-  <script>
-    const googleClientId = "<%- googleClientId %>";
-  </script>
-
-
-<script src="js/app.js" defer></script>
-
+  <script src="js/app.js" defer></script>
 </head>
 
 <body>
   <div class="sidebar">
     <div class="info">
-      <img class="logo"
-        src="https://creazilla-store.fra1.digitaloceanspaces.com/emojis/47058/artist-palette-emoji-clipart-xl.png"
-        alt="VLC Board" />
-      <h1>VLC Board</h1>
-      <div class="links">
-        <a href="/about" target="_blank">About r/Place</a>
-        <a href="https://github.com/TheRedstoneRadiant/VLC-r-Place" target="_blank">Star on Github</a>
-      </div>
     </div>
     <div id="owner"></div>
     <div id="colors">
@@ -68,8 +50,6 @@
         data-logo_alignment="left"
       ></div>
     <div id="root"></div>    </div>
-    <button id="connect-web3">Connect Wallet</button>
-
     </div>
     <div id="container">
       <p id="pixel"></p>
